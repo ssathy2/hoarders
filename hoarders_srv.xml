@@ -1,3 +1,5 @@
 <hoarders>
-<dirpath>~/hoarders_test</dirpath>
+<hoarderspath>/Users/rsathyam/hoarders_test</hoarderspath>
+<dropboxpath>/Users/rsathyam/Dropbox</dropboxpath>
+<gdrivepath>/Users/rsathyam/Google\ Drive/</gdrivepath>
 </hoarders>
