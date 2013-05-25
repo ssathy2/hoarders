@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 from xml.dom import minidom
 from filecmp import dircmp
-
 import math
 import sys
 import md5
@@ -25,7 +24,7 @@ def md5file(filename):
 	fh.close()
 	return digest.hexdigest()
 
-# scans directory recursively and computes checksum for files and subdirs in dir passed in
+# scans directory recursively and computes checksum for files
 # returns a dict of checksums->file paths...if we have 
 def scan_dir(dir):	
 	print "Scanning directory: %s" % dir
@@ -70,8 +69,14 @@ def copy_files_from_src_to_dst(src_scanned_dict, dst_scanned_dict, src, dst):
 		if not os.path.exists(dstdir):	
 			# create all sub-dirs
 			os.makedirs(dstdir)
-
-		shutil.copy(path_to_file, dstdir)
+			for root, dirs, name in os.walk(dst):
+				if(root != dst):
+					ind = root.rfind(dst)
+					ind += len(dst)
+					dir_rel_path = root[ind:]
+					shutil.copystat(os.path.join(src, dir_rel_path), root)
+			
+		shutil.copy2(path_to_file, dstdir)
 		num_files_copied_so_far=num_files_copied_so_far+1;
 		if num_files_copied_so_far != 0:
 			prev_percentage = percentage;
@@ -79,12 +84,13 @@ def copy_files_from_src_to_dst(src_scanned_dict, dst_scanned_dict, src, dst):
 			if percentage % 10 == 0 and prev_percentage != percentage:
 				drawProgressBar(percentage)
 	sys.stdout.write("\n")
+
 def run_hoarders():
 	#Read in the the directory path
 	xmldoc = minidom.parse('hoarders_srv.xml')
 	
-	storage_paths = [];
-	parsed_dirs = {};
+	storage_paths = []
+	parsed_dirs = {}
 
 	# parse out the paths to the storage dirs and scan the dir to compile a state of the directory
 	for path in xmldoc.getElementsByTagName('storage_path'):
@@ -94,7 +100,7 @@ def run_hoarders():
 				sys.exit(0)
 			storage_paths.append(string_path)
 			parsed_dirs[string_path] = scan_dir(string_path)
-	
+
 	for path_1 in storage_paths:
 		for path_2 in storage_paths:
 			if not (path_1 is path_2):
