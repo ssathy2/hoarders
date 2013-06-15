@@ -1,5 +1,5 @@
 <hoarders>
-<hoarderspath>/Users/rsathyam/hoarders_test</hoarderspath>
-<dropboxpath>/Users/rsathyam/Dropbox</dropboxpath>
-<gdrivepath>/Users/rsathyam/Google\ Drive/</gdrivepath>
+	<storage_path>/Users/siddharthsathyam/Dropbox/</storage_path>
+	<storage_path>/Users/siddharthsathyam/Google_Drive/</storage_path>
+	<storage_path>/Users/siddharthsathyam/SkyDrive_Slim_copy/</storage_path>
 </hoarders>
