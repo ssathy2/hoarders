@@ -9,6 +9,9 @@ import difflib
 import os
 import shutil
 
+HOARDERS_DIR = ''
+DROPBOX_DIR = ''
+
 # ignore all .DS_Store files
 # This is probably the bad way to do it but for copytree we need to pass a tuple for the list of files
 # to ignore and this makes the most sense
@@ -150,16 +153,31 @@ def process_xml(file_name):
 	return (storage_paths, parsed_dir_files, parsed_dir_subdirs)
 
 def run_hoarders():
-	#Read in the the directory path
-	storage_paths, parsed_dir_files, parsed_dir_subdirs = process_xml('hoarders_srv.xml')
+    #Startup
+    print('Welcome to Hoarders!')
 
-	for path_1 in storage_paths:
-		for path_2 in storage_paths:
-			if not (path_1 is path_2):
-				print "Syncing sub-directories from directory %s with directory %s..." % (path_2,path_1)
-				copy_subdirs_from_src_to_dst(parsed_dir_subdirs[path_1], parsed_dir_subdirs[path_2], path_1, path_2)
-				print "Syncing files from directory %s with directory %s..." % (path_2,path_1)
-				copy_files_from_src_to_dst(parsed_dir_files[path_1], parsed_dir_files[path_2], path_1, path_2)
+    HOARDERS_DIR = raw_input("Enter your Hoarders dir: ");
+
+    if HOARDERS_DIR == '':
+        print 'Need to specify Hoarders dir'
+        sys.exit(0)
+
+    DROPBOX_DIR = raw_input("Enter your Dropbox dir: ");
+
+    if DROPBOX_DIR == '':
+        print 'Need to specify Dropbox dir'
+        sys.exit(0)
+
+	#Read in the the directory path
+	#storage_paths, parsed_dir_files, parsed_dir_subdirs = process_xml('hoarders_srv.xml')
+
+	#for path_1 in storage_paths:
+	#	for path_2 in storage_paths:
+	#		if not (path_1 is path_2):
+	#			print "Syncing sub-directories from directory %s with directory %s..." % (path_2,path_1)
+	#			copy_subdirs_from_src_to_dst(parsed_dir_subdirs[path_1], parsed_dir_subdirs[path_2], path_1, path_2)
+	#			print "Syncing files from directory %s with directory %s..." % (path_2,path_1)
+	#			copy_files_from_src_to_dst(parsed_dir_files[path_1], parsed_dir_files[path_2], path_1, path_2)
 
 if __name__ == "__main__":
 	run_hoarders()
