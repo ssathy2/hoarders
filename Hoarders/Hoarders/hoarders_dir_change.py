@@ -1,6 +1,7 @@
 import shutil
 import sys
 import os
+
 from hoarders_srv import process_xml
 
 # basically take the files modified from stdin and sync them with the local storages
@@ -31,20 +32,18 @@ def get_suffix_from_file_modified(hoarders_paths, file_modified):
 			return hoarders_path
 
 def main():
-	
 	# the first arg to the program contains the path to the xml
-	print "len(sys.argv)"
-	
-	if(len(sys.argv) is not 3):
+	print len(sys.argv)
+	if(len(sys.argv) is not 2):
 		print "Invalid commands to hoarders_dir_change.py"
 		sys.exit()
 	
 	# get the storage paths and global_hoarders_path from xml
-	hoarders_xml_path = sys.argv[2]
+	hoarders_xml_path = sys.argv[1]
 	
 	print "Hoarders XML File at: %s" % (hoarders_xml_path)
 	storage_paths, global_hoarders_paths = process_xml(hoarders_xml_path)
-	
+
 	# get the files that were modded by calling get_files_from_stdin
 	files_modified = get_modified_files_from_stdin()
 	print "Files modified: "
