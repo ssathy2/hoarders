@@ -4,7 +4,7 @@ import os
 
 from hoarders_srv import process_xml
 
-# basically take the files modified from stdin and sync them with the local storages
+# basically take the files modified from stdin separated by newlines and return them...this call should be made only once
 def get_modified_files_from_stdin():
 	lines = []
 	for line in sys.stdin:
@@ -28,12 +28,11 @@ Storage Paths:
 """
 def get_suffix_from_file_modified(hoarders_paths, file_modified):
 	for hoarders_path in hoarders_paths:
-		if hoarders_path in files_modified:
+		if hoarders_path in file_modified:
 			return hoarders_path
 
 def main():
 	# the first arg to the program contains the path to the xml
-	print len(sys.argv)
 	if(len(sys.argv) is not 2):
 		print "Invalid commands to hoarders_dir_change.py"
 		sys.exit()
@@ -48,14 +47,18 @@ def main():
 	files_modified = get_modified_files_from_stdin()
 	print "Files modified: "
 	print files_modified
-	"""if(len(files_modified) != 0):
+	if(len(files_modified) != 0):
 		for file_modified in files_modified:
+			print file_modified
 			suffix = get_suffix_from_file_modified(global_hoarders_paths, file_modified)
-			for storage_path in storage_paths:
+			print suffix
+			"""for storage_path in storage_paths:
 				storage_hoarders_path = os.path.join(storage_path, 'hoarders')
-				if(os.path.exists(file_modified))
-					shutil.copy2(file_modified, storage_hoarders_path)
-					print "File: %s copied to %s" % (files_modified, storage_hoarders_path)"""
+				if(!os.path.exists(file_modified)):
+					os.mkdir(file_modified)
+				shutil.copy2(file_modified, storage_hoarders_path)
+				print "File: %s copied to %s" % (files_modified, storage_hoarders_path)"""
+				
 
 if __name__ == '__main__':
 	main()

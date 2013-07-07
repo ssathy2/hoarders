@@ -137,8 +137,8 @@ void fsevents_callback(ConstFSEventStreamRef streamRef,
 		
 	}
 	
-	if([modifiedDirArr count] > 0) [HoardersPythonExtension runDirChangeScriptWithPaths: modifiedDirArr];
-	if([modifiedFileArr count] > 0) [HoardersPythonExtension runDirChangeScriptWithPaths: modifiedFileArr];
+	if([modifiedDirArr count] > 0) [[HoardersPythonExtension sharedPythonObject] runDirChangeScriptWithPaths: modifiedDirArr];
+	if([modifiedFileArr count] > 0) [[HoardersPythonExtension sharedPythonObject] runDirChangeScriptWithPaths: modifiedFileArr];
 }
 
 - (bool) isEventDir: (const FSEventStreamEventFlags) flag

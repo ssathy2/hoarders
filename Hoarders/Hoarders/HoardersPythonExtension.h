@@ -10,6 +10,7 @@
 #import "HoardersConstants.h"
 
 @interface HoardersPythonExtension : NSObject
-	+ (void) runInitScript;
-	+ (void) runDirChangeScriptWithPaths: (NSArray*) paths;
+	+ (HoardersPythonExtension*) sharedPythonObject;
+	- (void) runInitScript;
+	- (void) runDirChangeScriptWithPaths: (NSArray*) paths;
 @end

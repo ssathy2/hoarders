@@ -10,17 +10,27 @@
 
 @implementation HoardersPythonExtension
 
-+(void) runDirChangeScriptWithPaths:(NSArray *)paths
++ (HoardersPythonExtension*) sharedPythonObject
+{
+	static HoardersPythonExtension* pyObject;
+	static dispatch_once_t onceToken;
+	dispatch_once(&onceToken, ^{
+		pyObject = [[HoardersPythonExtension alloc] init];
+	});
+	return pyObject;
+}
+
+- (void) runDirChangeScriptWithPaths:(NSArray *)paths
 {
 	[self asyncRunScriptWithName: PYTHON_DIR_CHANGE_SCRIPT forPaths: paths];
 }
 
-+(void) runInitScript
+- (void) runInitScript
 {
 	[self asyncRunScriptWithName: PYTHON_INIT_SCRIPT forPaths: nil];
 }
 
-+ (NSData*) formatArrayForStdIn: (NSArray*) arr
+- (NSData*) formatArrayForStdIn: (NSArray*) arr
 {
 	NSMutableData* data = [[NSMutableData alloc] init];
 	
@@ -103,7 +113,7 @@
  *
  *******************************************************/
 
-+ (void)runScriptWithName:(NSString *)name forPaths:(NSArray *)paths
+- (void)runScriptWithName:(NSString *)name forPaths:(NSArray *)paths
 {
     //-------------------------------
     // Set up Task
@@ -117,34 +127,31 @@
     [task setArguments: [NSArray arrayWithObjects: scriptPath, xmlPath, nil]];
 	
 	NSPipe* stdInPipe = [NSPipe pipe];
-	[[stdInPipe fileHandleForWriting] writeData: [self formatArrayForStdIn: paths]];
+	
 	[task setStandardInput: stdInPipe];
 	
-	
-    [task setStandardOutput:[NSPipe pipe]];
-    [task setStandardError:[task standardOutput]];
-	
-    //-------------------------------
-    // Set up Observers
-    //-------------------------------
+    [task setStandardOutput: [NSPipe pipe]];
+    [task setStandardError: [task standardOutput]];
 	
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     [[NSNotificationCenter defaultCenter] addObserver:self
-                    selector:@selector(commandSentData:)
-                        name: NSFileHandleReadCompletionNotification
-                      object: [[task standardOutput] fileHandleForReading]];
+											 selector:@selector(commandSentData:)
+												 name: NSFileHandleReadCompletionNotification
+											   object: [[task standardOutput] fileHandleForReading]];
+
 	
     [[NSNotificationCenter defaultCenter] addObserver:self
                     selector:@selector(taskTerminated:)
                         name:NSTaskDidTerminateNotification
-                      object:nil];
+                      object: task];
 	
-    //-------------------------------
-    // Launch
-    //-------------------------------
     [[[task standardOutput] fileHandleForReading] readInBackgroundAndNotify];
 	
-    [task launch];
+	[task launch];
+	if (paths) {
+		[[stdInPipe fileHandleForWriting] writeData: [self formatArrayForStdIn: paths]];
+		[[stdInPipe fileHandleForWriting] closeFile];
+	}
 }
 
 /*******************************************************
@@ -153,7 +160,7 @@
  *
  *******************************************************/
 
-+ (void)commandSentData:(NSNotification*)n
+- (void)commandSentData:(NSNotification*)n
 {
     NSData* d;
     d = [[n userInfo] valueForKey:NSFileHandleNotificationDataItem];
@@ -168,17 +175,17 @@
     [[n object] readInBackgroundAndNotify];
 }
 
-+ (void)taskTerminated:(NSNotification*)n
+- (void)taskTerminated:(NSNotification*)n
 {
     NSLog(@"Task terminated...");
 }
 
 
-+ (void)asyncRunScriptWithName: (NSString*) name forPaths: (NSArray*) paths
+- (void)asyncRunScriptWithName: (NSString*) name forPaths: (NSArray*) paths
 {
 	//dispatch_group_t group = dispatch_group_create();
     //dispatch_group_async(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-	[self runScriptWithName: name forPaths: paths];
+		[self runScriptWithName: name forPaths: paths];
 	//});
 }
 
